@@ -27,4 +27,4 @@ https://simonjeast.github.io/BOWTracker/
 
 ## What I Learned
 
-Working with an API means planning for more than the happy path. The app needs to render while the request is loading, recover if the location API fails, and still give the user manual controls. I also learned that useful API apps often transform data instead of displaying it directly: the location coordinates become a nearest stop, and the schedule table becomes sorted upcoming route options.
+The app needs to render while the request is loading, recover if the location API fails, and still give the user manual controls. I also learned that useful API apps often transform data instead of displaying it directly: the location coordinates become a nearest stop, and the schedule table becomes sorted upcoming route options.
