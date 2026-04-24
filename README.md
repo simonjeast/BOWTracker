@@ -19,7 +19,7 @@ A simple API-powered web app for finding the next Babson, Olin, and Wellesley co
 
 ## Live Site
 
-link tbd
+https://simonjeast.github.io/BOWTracker/
 
 ## Screenshot
 
