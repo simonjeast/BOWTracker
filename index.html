@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>BOW Shuttle Finder</title>
+    <link rel="preconnect" href="https://geolocation-db.com">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="hero" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">Babson • Olin • Wellesley</p>
+          <h1 id="page-title">BOW Shuttle Finder</h1>
+          <p class="lede">Find the next community shuttle departure using your current time, approximate location, and the 2025-2026 BOW schedule.</p>
+        </div>
+        <div class="status-panel" aria-live="polite">
+          <span class="status-label">Location API</span>
+          <strong id="apiStatus">Loading...</strong>
+          <span id="apiDetail">Fetching approximate location from geolocation-db.com.</span>
+        </div>
+      </section>
+
+      <section class="controls" aria-label="Trip controls">
+        <label>
+          Departure stop
+          <select id="originSelect"></select>
+        </label>
+
+        <label>
+          Destination
+          <select id="destinationSelect"></select>
+        </label>
+
+        <label>
+          Service day
+          <select id="daySelect">
+            <option value="auto">Today</option>
+            <option value="weekday">Monday-Wednesday</option>
+            <option value="late-weekday">Thursday-Friday</option>
+            <option value="saturday">Saturday</option>
+          </select>
+        </label>
+
+        <button id="useLocationButton" type="button">Use nearest stop</button>
+      </section>
+
+      <section id="message" class="message hidden" role="status"></section>
+
+      <section class="results-grid" aria-label="Shuttle results">
+        <article class="next-trip">
+          <span class="section-kicker">Next departure</span>
+          <h2 id="nextTime">--</h2>
+          <p id="routeSummary">Choose a route to see the next shuttle.</p>
+          <div class="metric-row">
+            <div>
+              <span>Leaves in</span>
+              <strong id="waitTime">--</strong>
+            </div>
+            <div>
+              <span>Arrives</span>
+              <strong id="arrivalTime">--</strong>
+            </div>
+            <div>
+              <span>Service</span>
+              <strong id="serviceType">--</strong>
+            </div>
+          </div>
+        </article>
+
+        <article class="schedule-list">
+          <div class="list-heading">
+            <div>
+              <span class="section-kicker">Browse</span>
+              <h2>Upcoming trips</h2>
+            </div>
+            <span id="tripCount" class="count-pill">0 trips</span>
+          </div>
+          <div id="tripList" class="trip-list"></div>
+        </article>
+      </section>
+
+      <section class="reference">
+        <h2>Stops</h2>
+        <div id="stopCards" class="stop-grid"></div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
