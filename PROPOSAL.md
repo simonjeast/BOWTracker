@@ -1,4 +1,6 @@
-# Project3
+# BOWTracker - Project 3
+
+I am building this for my girlfriend, a Wellesley College student, who frequently takes the BOW (Babson, Olin, Wellesley) community shuttle from Wellesley to Babson. The current schedule is in a confusing pdf. With this, I aim to make her travel experience easier.
 
 ## What I'm Building
 
