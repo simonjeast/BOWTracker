@@ -61,4 +61,4 @@ No accounts, analytics, simulated bus motion, fabricated delay estimates, or aut
 
 ## Publishing
 
-The existing site is at <https://simonjeast.github.io/BOWTracker/>. Work is staged on the redesign branch; this README does not imply the live site has been updated. Complete the browser/visual checklist before merging. A current timetable should be enabled only after resolving the source conflict and obtaining effective dates and exceptions.
+The redesigned site is published at <https://simonjeast.github.io/bowtracker/>. Browser and mobile checks passed before the redesign was merged. Current departures remain unavailable until the source conflict is resolved and effective dates and service exceptions are confirmed.
