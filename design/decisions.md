@@ -14,4 +14,4 @@ Refinement before coding:
 
 Concept-v2.png became the implementation reference. The implemented flow preserves the concept's hierarchy, desktop navigation rail, pale-sage stop sequence and separate journey detail page. On mobile the rail becomes a compact header with all three destinations visible. The diagram uses a readable stop sequence rather than implying geographic accuracy.
 
-Precision refinement: the source PDF identifies every time as a departure. The implementation therefore describes the destination time as a scheduled stop call and duration as time between stops; it avoids a measured-arrival claim. Browser visual verification remains outstanding because the browser policy check was unavailable; see docs/verification.md.
+Precision refinement: the source PDF identifies every time as a departure. The implementation therefore describes the destination time as a scheduled stop call and duration as time between stops; it avoids a measured-arrival claim. Browser visual verification later succeeded, leading to refined mobile warning spacing and a compact first-result action; see docs/verification.md.

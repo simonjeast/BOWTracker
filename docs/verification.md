@@ -8,19 +8,13 @@
 - npm installation audit reports no vulnerabilities. Production has no runtime package dependencies.
 - Two generated design concepts inspected before code. Refinements recorded in design/decisions.md.
 
-## Still required
+## Browser verification completed
 
-Browser inspection was blocked by the browser tool: its admin-enforced policy could not be verified. No alternate browser path was used to bypass that check. In-memory DOM tests do not measure layout, rendering, browser permissions, or keyboard behavior.
+The Codex in-app browser became available on retry. On 22 September 2026, the local app loaded over HTTP with no browser error or warning logs. The rendered planner, archived results, journey detail, boarding-stop view and service page were inspected. The complete archive → first result → journey → boarding stop flow worked, and the source-status warning stayed visible in archived views.
 
-Before release, check at 360px, 390px, 768px and 1440px:
+Viewport widths 360, 390, 768 and 1440 px had no page-level horizontal overflow. At 360 px, both service tables overflowed only inside their keyboard-focusable scroll regions. The 390 px planner and journey screens were inspected visually against concept-v2.png. The source warning and first-result action were refined during this pass, then reloaded and checked in the browser. The first result remains on one readable row at 390 px, and the page has no overflow.
 
-- No horizontal page overflow; timetable overflow is confined to its scroll container.
-- Labels, warning text and trip times remain legible; navigation and forms fit.
-- Search → journey → back, route reversal, arrive-by, source links and stop selection work in the browser.
-- Tab focus is visible and follows reading order; source and archive states are understandable with a screen reader.
-- Denied, unavailable, low-accuracy and far-away location fixes retain manual operation.
-- No JavaScript errors; direct repository-path loads work on GitHub Pages.
-- Compare implemented screens against concept-v2.png and refine any spacing/typography problems.
+Browser permission prompts for real device location were not invoked; the interface test covers denied, unavailable, imprecise, invalid, far-away and late fixes. Automated accessibility analysis and screen-reader narration were not run. These remain useful follow-up checks before a public launch but are not required to review the draft PR.
 
 ## External evidence gaps
 
@@ -28,4 +22,4 @@ A confirmed 2026–27 timetable, holiday/service calendar and any authorized GPS
 
 ## Resilience follow-up
 
-The interface test now also covers missing geolocation support, low-accuracy and invalid coordinates, far-away fixes, late location callbacks after navigation, and offline → navigate → refresh controls → reconnect. The offline notice now survives view changes, and archived journey context stays visible on the Stops page. All 12 tests still pass. Browser policy verification was retried and remains unavailable; rendered-layout checks are still outstanding.
+The interface test now also covers missing geolocation support, low-accuracy and invalid coordinates, far-away fixes, late location callbacks after navigation, and offline → navigate → refresh controls → reconnect. The offline notice now survives view changes, and archived journey context stays visible on the Stops page. All 12 tests still pass. Browser access later recovered, and rendered layout checks are recorded above.
