@@ -1,92 +1,20 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>BOW Shuttle Finder</title>
-    <link rel="preconnect" href="https://geolocation-db.com">
-    <link rel="stylesheet" href="styles.css">
-  </head>
-  <body>
-    <main class="app-shell">
-      <section class="hero" aria-labelledby="page-title">
-        <div>
-          <p class="eyebrow">Babson • Olin • Wellesley</p>
-          <h1 id="page-title">BOW Shuttle Finder</h1>
-          <p class="lede">Find the next community shuttle departure using your current time, approximate location, and the 2025-2026 BOW schedule.</p>
-        </div>
-        <div class="status-panel" aria-live="polite">
-          <span class="status-label">Location API</span>
-          <strong id="apiStatus">Loading...</strong>
-          <span id="apiDetail">Fetching approximate location from geolocation-db.com.</span>
-        </div>
-      </section>
-
-      <section class="controls" aria-label="Trip controls">
-        <label>
-          Departure stop
-          <select id="originSelect"></select>
-        </label>
-
-        <label>
-          Destination
-          <select id="destinationSelect"></select>
-        </label>
-
-        <label>
-          Service day
-          <select id="daySelect">
-            <option value="auto">Today</option>
-            <option value="weekday">Monday-Wednesday</option>
-            <option value="late-weekday">Thursday-Friday</option>
-            <option value="saturday">Saturday</option>
-          </select>
-        </label>
-
-        <button id="useLocationButton" type="button">Use nearest stop</button>
-      </section>
-
-      <section id="message" class="message hidden" role="status"></section>
-
-      <section class="results-grid" aria-label="Shuttle results">
-        <article class="next-trip">
-          <span class="section-kicker">Next departure</span>
-          <h2 id="nextTime">--</h2>
-          <p id="routeSummary">Choose a route to see the next shuttle.</p>
-          <div class="metric-row">
-            <div>
-              <span>Leaves in</span>
-              <strong id="waitTime">--</strong>
-            </div>
-            <div>
-              <span>Arrives</span>
-              <strong id="arrivalTime">--</strong>
-            </div>
-            <div>
-              <span>Service</span>
-              <strong id="serviceType">--</strong>
-            </div>
-          </div>
-        </article>
-
-        <article class="schedule-list">
-          <div class="list-heading">
-            <div>
-              <span class="section-kicker">Browse</span>
-              <h2>Upcoming trips</h2>
-            </div>
-            <span id="tripCount" class="count-pill">0 trips</span>
-          </div>
-          <div id="tripList" class="trip-list"></div>
-        </article>
-      </section>
-
-      <section class="reference">
-        <h2>Stops</h2>
-        <div id="stopCards" class="stop-grid"></div>
-      </section>
-    </main>
-
-    <script src="app.js"></script>
-  </body>
-</html>
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#173e32"><meta name="description" content="A clearer way to explore the Babson, Olin and Wellesley shuttle timetable. Honest schedule status, precise route planning and stop-by-stop journeys.">
+<title>BOWTracker · Your campus connection</title><link rel="icon" href="icon.svg" type="image/svg+xml"><link rel="stylesheet" href="styles.css?v=4">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="shell">
+<aside class="sidebar">
+<a class="brand" href="#find" aria-label="BOWTracker home"><svg viewBox="0 0 32 44" aria-hidden="true"><path d="M24 6 8 22l10 16"/><circle cx="24" cy="6" r="4"/><circle cx="8" cy="22" r="4"/><circle cx="18" cy="38" r="4"/></svg><span>BOW<span class="brand-second">Tracker</span></span></a>
+<nav aria-label="Main navigation"><a href="#find" data-nav="find"><span aria-hidden="true">⌕</span> Find a shuttle</a><a href="#stops" data-nav="stops"><span aria-hidden="true">⌖</span> Stops</a><a href="#service" data-nav="service"><span aria-hidden="true">▤</span> Schedule & service</a></nav>
+<div class="rail-note"><span class="mini-line"></span><p>Three campuses.<br>One connection.</p><small>INDEPENDENT STUDENT PROJECT</small></div>
+</aside>
+<main id="main" tabindex="-1"></main>
+</div>
+<noscript><p class="noscript">Enable JavaScript to explore journeys. <a href="https://www.wellesley.edu/about-us/offices-departments/transportation/shuttle-bus-schedule">Check the official shuttle information.</a> Current service is unconfirmed.</p></noscript>
+<script type="module" src="app.js"></script>
+</body></html>
