@@ -1,472 +1,94 @@
-const stops = [
-  {
-    id: "wellesley-campus",
-    name: "Wellesley Campus Center",
-    shortName: "Wellesley",
-    detail: "Campus Center",
-    lat: 42.2937,
-    lon: -71.3065,
-  },
-  {
-    id: "wellesley-founders",
-    name: "Wellesley Founders Lot Gates",
-    shortName: "Founders Lot",
-    detail: "Founders Parking Lot Gates",
-    lat: 42.2919,
-    lon: -71.3049,
-  },
-  {
-    id: "olin-east",
-    name: "Olin East Hall",
-    shortName: "Olin",
-    detail: "East Hall",
-    lat: 42.2931,
-    lon: -71.2642,
-  },
-  {
-    id: "babson-hollister",
-    name: "Babson Hollister Lot",
-    shortName: "Babson",
-    detail: "Hollister Parking Lot",
-    lat: 42.2992,
-    lon: -71.2639,
-  },
-];
-
-const routePattern = [
-  "wellesley-campus",
-  "wellesley-founders",
-  "olin-east",
-  "babson-hollister",
-  "wellesley-founders",
-  "wellesley-campus",
-];
-
-const weekdayRows = [
-  ["7:40 AM", "7:42 AM", "7:52 AM", "7:55 AM", "8:05 AM", "8:07 AM"],
-  ["8:10 AM", "8:12 AM", "8:22 AM", "8:25 AM", "8:35 AM", "8:37 AM"],
-  ["8:40 AM", "8:42 AM", "8:52 AM", "8:55 AM", "9:05 AM", "9:07 AM"],
-  ["9:10 AM", "9:12 AM", "9:22 AM", "9:25 AM", "9:35 AM", "9:37 AM"],
-  ["9:40 AM", "9:42 AM", "9:52 AM", "9:55 AM", "10:05 AM", "10:07 AM"],
-  ["10:40 AM", "10:42 AM", "10:52 AM", "10:55 AM", "11:05 AM", "11:07 AM"],
-  ["11:10 AM", "11:12 AM", "11:22 AM", "11:25 AM", "11:35 AM", "11:37 AM"],
-  ["11:40 AM", "11:42 AM", "11:52 AM", "11:55 AM", "12:05 PM", "12:07 PM"],
-  ["12:40 PM", "12:42 PM", "12:52 PM", "12:55 PM", "1:05 PM", "1:07 PM"],
-  ["1:40 PM", "1:42 PM", "1:52 PM", "1:55 PM", "2:05 PM", "2:07 PM"],
-  ["2:10 PM", "2:12 PM", "2:22 PM", "2:25 PM", "2:35 PM", "2:37 PM"],
-  ["2:40 PM", "2:42 PM", "2:52 PM", "2:55 PM", "3:05 PM", "3:07 PM"],
-  ["3:10 PM", "3:12 PM", "3:22 PM", "3:25 PM", "3:35 PM", "3:37 PM"],
-  ["4:10 PM", "4:12 PM", "4:22 PM", "4:25 PM", "4:35 PM", "4:37 PM"],
-  ["4:40 PM", "4:42 PM", "4:52 PM", "4:55 PM", "5:05 PM", "5:07 PM"],
-  ["5:10 PM", "5:12 PM", "5:22 PM", "5:25 PM", "5:35 PM", "5:37 PM"],
-  ["5:40 PM", "5:42 PM", "5:52 PM", "5:55 PM", "6:05 PM", "6:07 PM"],
-  ["6:10 PM", "6:12 PM", "6:22 PM", "6:25 PM", "6:35 PM", "6:37 PM"],
-  ["6:40 PM", "6:42 PM", "6:52 PM", "6:55 PM", "7:05 PM", "7:07 PM"],
-  ["7:40 PM", "7:42 PM", "7:52 PM", "7:55 PM", "8:05 PM", "8:07 PM"],
-  ["8:10 PM", "8:12 PM", "8:22 PM", "8:25 PM", "8:35 PM", "8:37 PM"],
-  ["8:40 PM", "8:42 PM", "8:52 PM", "8:55 PM", "9:05 PM", "9:07 PM"],
-  ["9:10 PM", "9:12 PM", "9:22 PM", "9:25 PM", "9:35 PM", "9:37 PM"],
-];
-
-const lateWeekdayRows = [
-  ...weekdayRows,
-  ["9:40 PM", "9:42 PM", "9:52 PM", "9:55 PM", "10:05 PM", "10:07 PM"],
-  ["10:10 PM", "10:12 PM", "10:22 PM", "10:25 PM", "10:35 PM", "10:37 PM"],
-  ["10:40 PM", "10:42 PM", "10:52 PM", "10:55 PM", "11:05 PM", "11:07 PM"],
-];
-
-const saturdayRows = [
-  ["3:10 PM", "3:12 PM", "3:22 PM", "3:25 PM", "3:35 PM", "3:37 PM"],
-  ["3:40 PM", "3:42 PM", "3:52 PM", "3:55 PM", "4:05 PM", "4:07 PM"],
-  ["4:10 PM", "4:12 PM", "4:22 PM", "4:25 PM", "4:35 PM", "4:37 PM"],
-  ["4:40 PM", "4:42 PM", "4:52 PM", "4:55 PM", "5:05 PM", "5:07 PM"],
-  ["5:10 PM", "5:12 PM", "5:22 PM", "5:25 PM", "5:35 PM", "5:37 PM"],
-  ["5:40 PM", "5:42 PM", "5:52 PM", "5:55 PM", "6:05 PM", "6:07 PM"],
-  ["6:10 PM", "6:12 PM", "6:22 PM", "6:25 PM", "6:35 PM", "6:37 PM"],
-  ["6:40 PM", "6:42 PM", "6:52 PM", "6:55 PM", "7:05 PM", "7:07 PM"],
-  ["8:10 PM", "8:12 PM", "8:22 PM", "8:25 PM", "8:35 PM", "8:37 PM"],
-  ["8:40 PM", "8:42 PM", "8:52 PM", "8:55 PM", "9:05 PM", "9:07 PM"],
-  ["9:10 PM", "9:12 PM", "9:22 PM", "9:25 PM", "9:35 PM", "9:37 PM"],
-  ["9:40 PM", "9:42 PM", "9:52 PM", "9:55 PM", "10:05 PM", "10:07 PM"],
-  ["10:10 PM", "10:12 PM", "10:22 PM", "10:25 PM", "10:35 PM", "10:37 PM"],
-  ["10:40 PM", "10:42 PM", "10:52 PM", "10:55 PM", "11:05 PM", "11:07 PM"],
-  ["11:10 PM", "11:12 PM", "11:22 PM", "11:25 PM", "11:35 PM", "11:37 PM"],
-  ["11:40 PM", "11:42 PM", "11:52 PM", "11:55 PM", "12:05 AM", "12:07 AM"],
-];
-
-const elements = {
-  apiStatus: document.querySelector("#apiStatus"),
-  apiDetail: document.querySelector("#apiDetail"),
-  originSelect: document.querySelector("#originSelect"),
-  destinationSelect: document.querySelector("#destinationSelect"),
-  daySelect: document.querySelector("#daySelect"),
-  useLocationButton: document.querySelector("#useLocationButton"),
-  message: document.querySelector("#message"),
-  nextTime: document.querySelector("#nextTime"),
-  routeSummary: document.querySelector("#routeSummary"),
-  waitTime: document.querySelector("#waitTime"),
-  arrivalTime: document.querySelector("#arrivalTime"),
-  serviceType: document.querySelector("#serviceType"),
-  tripCount: document.querySelector("#tripCount"),
-  tripList: document.querySelector("#tripList"),
-  stopCards: document.querySelector("#stopCards"),
-};
-
-const savedSettings = JSON.parse(localStorage.getItem("bow-shuttle-settings") || "{}");
-let latestLocation = null;
-
-function initializeApp() {
-  renderStopOptions();
-  renderStopCards();
-  elements.originSelect.value = savedSettings.origin || "babson-hollister";
-  updateDestinationOptions(savedSettings.destination);
-  elements.daySelect.value = savedSettings.day || "auto";
-  bindEvents();
-  renderTrips();
-  fetchApproximateLocation();
+import { stops, routePattern, schedule } from './lib/schedule.js';
+import { localParts, searchJourneys, journeysForDate, formatTime, formatDate, validDate, rowsForDate, rowMinutes } from './lib/journeys.js';
+const main = document.querySelector('#main');
+const escape = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const stop = id => stops.find(s => s.id === id);
+const initial = localParts();
+let saved = {};
+try { saved = JSON.parse(localStorage.getItem('bow-preferences-v2') || '{}') || {}; } catch {}
+const state = { origin: stop(saved.origin) ? saved.origin : 'wellesley-campus', destination: stop(saved.destination) ? saved.destination : 'babson-hollister', date: initial.date, time: initial.time, mode: 'leave', preview: false, searched: false, result: null };
+if (state.origin === state.destination) state.destination = stops.find(s => s.id !== state.origin).id;
+let locationRequest = 0;
+function persist() { try { localStorage.setItem('bow-preferences-v2', JSON.stringify({ origin: state.origin, destination: state.destination })); } catch {} }
+function header(title, description) { return `<header class="page-heading"><p class="eyebrow">BABSON <span>·</span> OLIN <span>·</span> WELLESLEY</p><h1>${title}</h1><p class="lede">${description}</p></header>`; }
+function banner() {
+  return state.preview ? `<div class="notice archive"><span class="notice-icon" aria-hidden="true">!</span><div><strong>Archived timetable preview · AY 2025–26</strong><p>Explore the published pattern. Dates do not confirm service or holiday operation.</p></div><button class="text-button" id="exitPreview">Exit preview ↗</button></div>` : `<div class="notice"><span class="notice-icon" aria-hidden="true">!</span><div><strong>Current schedule unconfirmed</strong><p>College timetables disagree. Check the sources before you travel.</p></div><a class="notice-link" href="#service">Service details ↗</a></div>`;
 }
-
-function bindEvents() {
-  elements.originSelect.addEventListener("change", () => {
-    updateDestinationOptions();
-    renderTrips();
-    saveSettings();
-  });
-
-  elements.destinationSelect.addEventListener("change", () => {
-    renderTrips();
-    saveSettings();
-  });
-
-  elements.daySelect.addEventListener("change", () => {
-    renderTrips();
-    saveSettings();
-  });
-
-  elements.useLocationButton.addEventListener("click", () => {
-    if (!latestLocation) {
-      showMessage("Location is not available yet. Try again after the API finishes loading.");
-      return;
-    }
-
-    setOriginToNearestStop(latestLocation.lat, latestLocation.lon, "API location");
-  });
+function footer() { return `<footer><span>BOWTracker <span class="footer-dot">·</span> Made for the journey between.</span><a href="#service">Scheduled times, not live tracking ↗</a></footer>`; }
+function options(selected) { return stops.map(s => `<option value="${s.id}" ${s.id === selected ? 'selected' : ''}>${escape(s.name)}</option>`).join(''); }
+function diagram() { return `<aside class="route-panel" aria-label="Shuttle route diagram"><div class="panel-top"><p class="eyebrow">THE BOW LOOP</p><span aria-hidden="true">↗</span></div><h2>Three campuses.<br>A little closer.</h2><p class="route-subtitle">Follow the stops, in order.</p><ol class="route-line">${routePattern.map((id, i) => `<li class="${i > 3 ? 'return-leg' : ''}"><span class="station-dot"></span><span><strong>${escape(stop(id).shortName)}</strong><small>${escape(stop(id).detail)}</small></span>${i === 3 ? '<span class="turn-label">RETURN ↓</span>' : ''}</li>`).join('')}</ol><p class="diagram-note">Route diagram · not a live map</p><a class="underlined" href="#stops">Explore boarding stops <span>↗</span></a></aside>`; }
+function tripCard(trip, index) {
+  const nextDay = localParts(trip.arrival).date !== localParts(trip.departure).date;
+  return `<a class="trip-card ${index === 0 ? 'first' : ''}" href="#journey/${trip.id}" aria-label="View journey leaving ${formatTime(trip.departure)}, destination stop ${formatTime(trip.arrival)}${nextDay ? ' next day' : ''}">${index === 0 ? '<span class="eyebrow">'+(state.mode === 'arrive' ? 'LATEST MATCHING DEPARTURE' : 'FIRST MATCHING DEPARTURE')+'</span>' : ''}<div class="trip-row"><div><h3>${formatTime(trip.departure)} <span class="time-arrow">→</span> ${formatTime(trip.arrival)}${nextDay ? '<small> +1 day</small>' : ''}</h3><p>${trip.duration} min between stops <span>·</span> ${trip.calls.length - 2 ? `${trip.calls.length - 2} intermediate stops` : 'Direct'}</p></div><span class="journey-link">${index === 0 ? 'View journey ' : ''}↗</span></div></a>`;
 }
-
-function renderStopOptions() {
-  elements.originSelect.innerHTML = stops.map(stopOption).join("");
+function resultsMarkup() {
+  if (!state.searched) return '';
+  const r = state.result;
+  if (r.status === 'invalid') return `<div class="empty" role="alert"><h2>Check your search</h2><p>${escape(r.message)}</p></div>`;
+  if (r.status === 'unconfirmed') return `<div class="empty"><span class="eyebrow">A TIMETABLE YOU CAN TRUST</span><h2>Let's confirm the schedule first.</h2><p>We haven't found a confirmed 2026–27 timetable. Current departures would be a guess, so they're unavailable here.</p><a class="button secondary" href="#service">Compare official sources ↗</a><button class="text-button" data-preview>Explore the archived timetable →</button></div>`;
+  if (r.status === 'no-direct-route') return `<div class="empty"><h2>No direct journey in this direction.</h2><p>The published run visits Olin before Babson. A ride through the end of one run into another is not confirmed. Choose a different route or check with the operator.</p><a class="text-button" href="#service">See service details →</a></div>`;
+  if (!r.trips.length) return `<div class="empty"><h2>No matching departures.</h2><p>${state.mode === 'arrive' ? 'No journey reaches your stop by this time on the selected date.' : 'No later departure is listed on the selected date.'} Try another time or date. The archived pattern has no Sunday starts and includes driver breaks.</p><button class="text-button" id="earlier">${state.mode === 'arrive' ? 'Show the full day' : 'Search from the start of this day'} →</button></div>`;
+  return `<div class="result-heading"><h2>${r.trips.length} scheduled option${r.trips.length === 1 ? '' : 's'}</h2><span>${formatDate(state.date)}</span></div><div class="trip-list">${r.trips.map(tripCard).join('')}</div><p class="fine-print">The PDF lists departure times at every stop. Destination times are scheduled stop calls, not measured arrivals. All times Eastern.</p>`;
 }
-
-function updateDestinationOptions(preferredDestination) {
-  const originId = elements.originSelect.value;
-  const validStops = stops.filter((stop) => stop.id !== originId);
-  elements.destinationSelect.innerHTML = validStops.map(stopOption).join("");
-
-  if (preferredDestination && validStops.some((stop) => stop.id === preferredDestination)) {
-    elements.destinationSelect.value = preferredDestination;
-  }
+function findView() {
+  main.innerHTML = header('Your campus<br class="desktop-break"> connection.', 'A clearer way to get from here to there.') + banner() + `<div class="planner-grid"><section class="planner-column" aria-label="Journey planner"><form id="planner" class="planner"><div class="section-title"><h2>Where are you headed?</h2><span class="small-tag">${state.preview ? 'TIMETABLE PREVIEW' : 'PLAN A JOURNEY'}</span></div><div class="route-inputs"><label>From<select name="origin">${options(state.origin)}</select></label><button class="swap" id="swap" type="button" aria-label="Swap origin and destination">⇅</button><label>To<select name="destination">${options(state.destination)}</select></label></div><div class="time-inputs"><label>Date<input type="date" name="date" value="${escape(state.date)}" required></label><label><span class="sr-only">Search mode</span><select name="mode" class="mode-select" aria-label="Search mode"><option value="leave" ${state.mode === 'leave' ? 'selected' : ''}>Leave after</option><option value="arrive" ${state.mode === 'arrive' ? 'selected' : ''}>Arrive by</option></select><input type="time" name="time" aria-label="Time in Eastern Time" value="${escape(state.time)}" required></label></div><p class="timezone">◷ All times Eastern · America/New_York</p><button class="button primary full" type="submit">${state.preview ? 'Find scheduled trips' : 'Find a shuttle'} <span>→</span></button></form><section id="results" aria-label="Journey results">${resultsMarkup()}</section>${!state.preview ? `<div class="archive-invite"><div class="archive-symbol" aria-hidden="true">▤</div><div><h2>Get to know the route.</h2><p>Explore the last dated timetable while the current schedule is unconfirmed.</p><button class="text-button" data-preview>Open archived timetable <span>→</span></button></div></div>` : ''}</section>${diagram()}</div>` + footer();
+  const form = document.querySelector('#planner');
+  form.addEventListener('change', readForm);
+  form.addEventListener('submit', e => { e.preventDefault(); readForm(); state.searched = true; state.result = searchJourneys(state); document.querySelector('#results').innerHTML = resultsMarkup(); bindResultActions(); document.querySelector('#results').scrollIntoView({ block: 'nearest', behavior: 'instant' }); });
+  document.querySelector('#swap').onclick = () => { readForm(); [state.origin, state.destination] = [state.destination, state.origin]; state.searched = false; persist(); findView(); bindShared(); document.querySelector('#swap').focus(); };
+  bindResultActions();
 }
-
-function stopOption(stop) {
-  return `<option value="${stop.id}">${stop.name}</option>`;
+function readForm() { const form = document.querySelector('#planner'); if (!form) return; const data = new FormData(form); for (const key of ['origin','destination','date','time','mode']) state[key] = data.get(key); persist(); if (state.searched) { state.searched = false; document.querySelector('#results').innerHTML = '<p class="fine-print">Search updated. Submit the form to refresh results.</p>'; } }
+function bindResultActions() { document.querySelectorAll('[data-preview]').forEach(b => b.onclick = enterPreview); const earlier = document.querySelector('#earlier'); if (earlier) earlier.onclick = () => { state.time = state.mode === 'arrive' ? '23:59' : '00:00'; state.result = searchJourneys(state); findView(); bindShared(); }; }
+function enterPreview() { state.preview = true; state.date = '2026-04-16'; state.time = '16:00'; state.searched = true; state.result = searchJourneys(state); if (location.hash !== '#find') location.hash = '#find'; else render(); }
+function journeyView(id) {
+  const pieces = id.split('_');
+  const trip = state.preview && validDate(pieces[0]) ? journeysForDate(pieces[0], state.origin, state.destination).find(t => t.id === id) : null;
+  if (!trip) { main.innerHTML = header('Start with your route.', 'Choose a journey from the planner to see its stops.') + `<a class="button primary" href="#find">Find a shuttle →</a>` + footer(); return; }
+  const origin = stop(trip.origin), destination = stop(trip.destination);
+  main.innerHTML = `<a class="back-link" href="#find">← Back to departures</a>` + header(`${escape(origin.shortName)} <span class="heading-arrow">→</span> ${escape(destination.shortName)}`, formatDate(trip.serviceDate)) + banner() + `<div class="detail-grid"><section class="journey-panel"><p class="eyebrow">YOUR SCHEDULED JOURNEY</p><h2 class="journey-time">${formatTime(trip.departure)} <span>→</span> ${formatTime(trip.arrival)}</h2><p class="journey-duration">${trip.duration} min between stops${localParts(trip.arrival).date !== trip.serviceDate ? ' · destination stop on '+formatDate(localParts(trip.arrival).date) : ''}</p><ol class="journey-timeline">${trip.calls.map((c,i) => `<li><time>${formatTime(c.at)}</time><span class="timeline-dot"></span><div><strong>${escape(stop(c.stopId).name)}</strong><small>${i === 0 ? 'Board here' : i === trip.calls.length - 1 ? 'Your destination · scheduled stop time' : 'Intermediate stop'}</small></div></li>`).join('')}</ol><a class="button primary full" href="#stops/${trip.origin}">Find boarding stop <span>↗</span></a><p class="fine-print">The operator asks riders to be at the stop at least five minutes before departure. These archived times do not confirm current service.</p></section><aside class="detail-aside"><div class="note-card"><span class="eyebrow">A LITTLE CLARITY</span><h2>A schedule,<br>not a moving bus.</h2><p>Every time here comes from the published timetable. We don't have a verified vehicle feed, so traffic delays and bus location aren't shown.</p><a class="underlined" href="#service">Where the times come from ↗</a></div><div class="small-note"><h3>Returning later?</h3><p>Plan your return separately: the loop's return leg does not stop at Olin.</p><button class="text-button" id="returnRoute">Plan the reverse route →</button></div></aside></div>` + footer();
+  document.querySelector('#returnRoute').onclick = () => { [state.origin,state.destination] = [state.destination,state.origin]; state.searched = false; persist(); location.hash = '#find'; };
 }
-
-function renderStopCards() {
-  elements.stopCards.innerHTML = stops
-    .map(
-      (stop) => `
-        <article class="stop-card">
-          <strong>${stop.name}</strong>
-          <span>${stop.detail}</span>
-        </article>
-      `,
-    )
-    .join("");
+function mapUrl(s) { return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(s.name+', Massachusetts')}`; }
+function stopsView(selected) {
+  main.innerHTML = header('Find your stop.', 'Four boarding locations. One shared campus loop.') + `<div class="stops-intro"><p>Use the official stop name to find your way. Map links open a place search; confirm the signed boarding point when you arrive.</p><button class="button secondary" id="locate">⌖ Suggest a nearby stop</button></div><div id="locationStatus" role="status"></div><div class="stop-grid">${stops.map((s,i) => `<article class="stop-card ${selected === s.id ? 'selected-stop' : ''}" id="${s.id}"><div class="stop-top"><span class="stop-number">0${i+1}</span><span class="small-tag">${i < 2 ? 'WELLESLEY' : s.shortName.toUpperCase()}</span></div><h2>${escape(s.shortName)}</h2><p class="stop-detail">${escape(s.detail)}</p><p class="stop-direction">${s.id === 'wellesley-founders' ? 'Served on both legs. Check your journey direction.' : s.id === 'olin-east' ? 'Served before Babson on the outbound leg.' : s.id === 'babson-hollister' ? 'Return leg continues to Founders and Wellesley.' : 'Start and end of the published loop.'}</p><div class="stop-actions"><a class="underlined" href="${mapUrl(s)}" target="_blank" rel="noreferrer">Open map search ↗</a><button class="text-button" data-origin="${s.id}">Leave from here →</button></div></article>`).join('')}</div><p class="fine-print">Location is optional, requested only when you choose it, and never stored. Suggestions use approximate stop coordinates; they are not walking directions.</p>` + footer();
+  document.querySelectorAll('[data-origin]').forEach(b => b.onclick = () => { state.origin = b.dataset.origin; if(state.destination === state.origin) state.destination = stops.find(s => s.id !== state.origin).id; state.searched=false; persist(); location.hash='#find'; });
+  document.querySelector('#locate').onclick = locate;
+  if (selected && stop(selected)) document.getElementById(selected).scrollIntoView({block:'nearest'});
 }
-
-async function fetchApproximateLocation() {
-  setApiState("Loading...", "Fetching approximate location from geolocation-db.com.");
-
-  try {
-    const response = await fetch("https://geolocation-db.com/json/");
-    if (!response.ok) {
-      throw new Error(`Location API returned ${response.status}`);
-    }
-
-    const data = await response.json();
-    if (!data.latitude || !data.longitude) {
-      throw new Error("Location API did not include coordinates.");
-    }
-
-    latestLocation = {
-      lat: Number(data.latitude),
-      lon: Number(data.longitude),
-      label: [data.city, data.state || data.region].filter(Boolean).join(", "),
-    };
-
-    const nearest = getNearestStop(latestLocation.lat, latestLocation.lon);
-    setApiState("Ready", `${latestLocation.label || "Approximate location"} is closest to ${nearest.stop.name}.`);
-    setOriginToNearestStop(latestLocation.lat, latestLocation.lon, "API location");
-  } catch (error) {
-    setApiState("Manual mode", "Location lookup failed. Pick a stop and day to browse the schedule.");
-    showMessage("Could not load the location API. The schedule still works with manual stop selection.");
-    console.error(error);
-  }
+function distance(a,b) { const rad=x=>x*Math.PI/180; const dlat=rad(b.lat-a.lat), dlon=rad(b.lon-a.lon); const h=Math.sin(dlat/2)**2+Math.cos(rad(a.lat))*Math.cos(rad(b.lat))*Math.sin(dlon/2)**2; return 6371000*2*Math.atan2(Math.sqrt(h),Math.sqrt(1-h)); }
+function locate() {
+  const el = document.querySelector('#locationStatus'); const request = ++locationRequest;
+  const show = html => { if (request === locationRequest && el.isConnected) el.innerHTML = html; };
+  if (!navigator.geolocation) { show('<p class="location-message">Location is unavailable in this browser. Choose a stop below.</p>'); return; }
+  show('<p class="location-message">Finding a nearby stop… Your browser will ask for permission.</p>');
+  navigator.geolocation.getCurrentPosition(position => {
+    const {latitude:lat,longitude:lon,accuracy} = position.coords;
+    if (![lat,lon,accuracy].every(Number.isFinite) || accuracy > 500 || accuracy < 0) { show('<p class="location-message">This location is too imprecise to suggest a stop. Choose one below.</p>'); return; }
+    const nearby = stops.map(s=>({s,metres:distance({lat,lon},s)})).sort((a,b)=>a.metres-b.metres)[0];
+    if(nearby.metres > 3000) { show('<p class="location-message">You seem to be away from the campuses. Choose your boarding stop below.</p>'); return; }
+    show(`<div class="location-message"><strong>${escape(nearby.s.name)} may be nearby.</strong><p>About ${Math.round(nearby.metres/100)*100} m in a straight line · device accuracy ±${Math.round(accuracy)} m. Stop coordinates are approximate.</p><button class="button secondary" id="confirmStop">Use this as my origin</button></div>`);
+    const button = el.querySelector('#confirmStop'); if(button) button.onclick = () => {state.origin=nearby.s.id;if(state.destination===state.origin)state.destination=stops.find(s=>s.id!==state.origin).id;state.searched=false;persist();location.hash='#find';};
+  }, error => show(`<p class="location-message">${error.code === 1 ? 'Location permission was declined.' : 'Your location could not be determined.'} You can still choose any stop below.</p>`), {enableHighAccuracy:true,timeout:10000,maximumAge:60000});
 }
-
-function setApiState(status, detail) {
-  elements.apiStatus.textContent = status;
-  elements.apiDetail.textContent = detail;
+function serviceView() {
+  main.innerHTML = header('Know before you go.', 'The sources, the schedule, and what still needs confirming.') + `<div class="notice"><span class="notice-icon" aria-hidden="true">!</span><div><strong>2026–27 service is not confirmed here</strong><p>Sources checked September 22, 2026. This app is independent of the colleges and operator.</p></div></div><div class="service-grid"><section class="source-card"><span class="eyebrow">THE LAST DATED SOURCE</span><h2>Babson · AY 2025–26</h2><p>Babson's transportation page still links this PDF. It provides a full timetable, but does not establish current-year service.</p><a class="underlined" href="${schedule.sourceUrl}" target="_blank" rel="noreferrer">Open official PDF ↗</a></section><section class="source-card"><span class="eyebrow">AN UNDATED SOURCE</span><h2>Wellesley · shuttle page</h2><p>The online table differs on late-service days and a midday trip. An undated page is not enough to settle the discrepancy.</p><a class="underlined" href="${schedule.wellesleyUrl}" target="_blank" rel="noreferrer">Open Wellesley's schedule ↗</a></section></div><section class="conflicts"><h2>Two differences that matter.</h2><div class="table-scroll" tabindex="0" role="region" aria-label="Schedule comparison"><table><caption class="sr-only">Conflicting official shuttle schedule details</caption><thead><tr><th>Service detail</th><th>Babson PDF · 2025–26</th><th>Wellesley · undated</th></tr></thead><tbody><tr><th>Extended evenings</th><td>Thursday & Friday</td><td>Tuesday & Thursday</td></tr><tr><th>Midday from Wellesley</th><td>12:40 pm</td><td>12:10 pm</td></tr></tbody></table></div></section><div class="service-grid"><section class="note-card"><span class="eyebrow">CHECK BEFORE TRAVEL</span><h2>Ask the operator.</h2><p>Wellesley lists JFK Transportation as the BOW shuttle operator. Confirm the current timetable, holiday service, and your boarding point.</p><a class="button primary" href="tel:+15086534500">Call 508-653-4500 ↗</a></section><section class="source-card"><span class="eyebrow">EXPLORE THE PATTERN</span><h2>The archived timetable.</h2><p>Browse the complete published rows, including breaks and Saturday's midnight finish. Preview dates are illustrative; the service calendar is unverified.</p><button class="button secondary" data-preview>Try a sample journey →</button></section></div><section class="timetable-section"><div class="section-title"><h2>AY 2025–26 timetable</h2><label class="table-selector">Service pattern<select id="tableDay"><option value="2026-04-13">Mon–Wed</option><option value="2026-04-16">Thu–Fri</option><option value="2026-04-18">Saturday</option></select></label></div><p class="fine-print">Archived · all times Eastern · every cell is a scheduled departure at that stop. No Sunday starts are listed. Breaks are gaps between rows.</p><div class="table-scroll" id="timetable" tabindex="0" role="region" aria-label="Scrollable archived timetable"></div></section>` + footer();
+  const table = () => { const rows = rowsForDate(document.querySelector('#tableDay').value); document.querySelector('#timetable').innerHTML = `<table><caption class="sr-only">Archived full shuttle timetable</caption><thead><tr>${['Wellesley','Founders →','Olin','Babson','Founders ←','Wellesley'].map(t=>`<th>${t}</th>`).join('')}</tr></thead><tbody>${rows.map(row=>`<tr>${row.map((t,i)=>`<td>${t}${rowMinutes(row)[i]>=1440?' +1 day':''}</td>`).join('')}</tr>`).join('')}</tbody></table>`; };
+  document.querySelector('#tableDay').onchange = table; table();
 }
-
-function setOriginToNearestStop(lat, lon, source) {
-  const nearest = getNearestStop(lat, lon);
-  elements.originSelect.value = nearest.stop.id;
-  updateDestinationOptions(elements.destinationSelect.value);
-  renderTrips();
-  saveSettings();
-  showMessage(`${source} selected ${nearest.stop.name}, about ${nearest.distance.toFixed(1)} miles from the detected position.`);
+function bindShared() {
+  document.querySelectorAll('[data-preview]').forEach(b=>b.onclick=enterPreview);
+  const exit = document.querySelector('#exitPreview'); if(exit)exit.onclick=()=>{state.preview=false;state.searched=false;Object.assign(state,{date:localParts().date,time:localParts().time});if(location.hash!=='#find')location.hash='#find';else render();};
 }
-
-function getNearestStop(lat, lon) {
-  return stops
-    .map((stop) => ({
-      stop,
-      distance: distanceInMiles(lat, lon, stop.lat, stop.lon),
-    }))
-    .sort((a, b) => a.distance - b.distance)[0];
+function render() {
+  locationRequest++;
+  const [view, id] = location.hash.slice(1).split('/');
+  document.querySelectorAll('[data-nav]').forEach(a=>{ const active=a.dataset.nav===(view==='journey'?'find':view||'find'); a.toggleAttribute('aria-current',active); if(active)a.setAttribute('aria-current','page'); });
+  if(view==='journey') journeyView(id || ''); else if(view==='stops') stopsView(id); else if(view==='service') serviceView(); else findView();
+  bindShared();
+  document.title = `BOWTracker · ${view==='stops'?'Stops':view==='service'?'Schedule & service':view==='journey'?'Your journey':'Your campus connection'}`;
 }
-
-function distanceInMiles(lat1, lon1, lat2, lon2) {
-  const earthRadius = 3958.8;
-  const dLat = toRadians(lat2 - lat1);
-  const dLon = toRadians(lon2 - lon1);
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) * Math.sin(dLon / 2) ** 2;
-  return earthRadius * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-}
-
-function toRadians(degrees) {
-  return degrees * (Math.PI / 180);
-}
-
-function renderTrips() {
-  hideMessage();
-
-  const now = new Date();
-  const service = getSelectedService(now);
-  const trips = getTripsForSelection(service, now);
-  const nextTrip = trips.find((trip) => trip.departureDate >= now) || trips[0];
-
-  if (!trips.length) {
-    renderEmptyState(service);
-    return;
-  }
-
-  renderNextTrip(nextTrip, service, now);
-  renderTripList(trips, now);
-}
-
-function getSelectedService(now) {
-  const selectedDay = elements.daySelect.value;
-  const serviceDay = selectedDay === "auto" ? getCurrentServiceDay(now) : selectedDay;
-  const serviceMap = {
-    weekday: {
-      label: "Monday-Wednesday",
-      rows: weekdayRows,
-    },
-    "late-weekday": {
-      label: "Thursday-Friday",
-      rows: lateWeekdayRows,
-    },
-    saturday: {
-      label: "Saturday",
-      rows: saturdayRows,
-    },
-    sunday: {
-      label: "Sunday",
-      rows: [],
-    },
-  };
-
-  return {
-    key: serviceDay,
-    ...serviceMap[serviceDay],
-  };
-}
-
-function getCurrentServiceDay(date) {
-  if (date.getDay() === 6) return "saturday";
-  if (date.getDay() === 0) return "sunday";
-  if (date.getDay() === 4 || date.getDay() === 5) return "late-weekday";
-  return "weekday";
-}
-
-function getTripsForSelection(service, now) {
-  const originId = elements.originSelect.value;
-  const destinationId = elements.destinationSelect.value;
-  const events = buildServiceEvents(service.rows, now);
-  const trips = [];
-
-  events.forEach((event, index) => {
-    if (event.stopId !== originId) {
-      return;
-    }
-
-    const destinationEvent = events.slice(index + 1).find((candidate) => candidate.stopId === destinationId);
-    if (destinationEvent) {
-      trips.push({
-        origin: getStop(originId),
-        destination: getStop(destinationId),
-        departureDate: event.date,
-        arrivalDate: destinationEvent.date,
-      });
-    }
-  });
-
-  return trips.sort((a, b) => a.departureDate - b.departureDate);
-}
-
-function buildServiceEvents(rows, now) {
-  const events = [];
-
-  rows.forEach((row, rowIndex) => {
-    row.forEach((timeText, stopIndex) => {
-      const date = buildDateForTime(timeText, now);
-
-      if (events.length && date < events[events.length - 1].date) {
-        date.setDate(date.getDate() + 1);
-      }
-
-      events.push({
-        rowIndex,
-        stopId: routePattern[stopIndex],
-        date,
-      });
-    });
-  });
-
-  const nextDayRows = rows.slice(0, 2);
-  nextDayRows.forEach((row, nextRowIndex) => {
-    row.forEach((timeText, stopIndex) => {
-      const date = buildDateForTime(timeText, now);
-      date.setDate(date.getDate() + 1);
-      events.push({
-        rowIndex: nextRowIndex + rows.length,
-        stopId: routePattern[stopIndex],
-        date,
-      });
-    });
-  });
-
-  return events.sort((a, b) => a.date - b.date);
-}
-
-function buildDateForTime(timeText, referenceDate) {
-  const match = timeText.match(/^(\d{1,2}):(\d{2}) (AM|PM)$/);
-  let hours = Number(match[1]);
-  const minutes = Number(match[2]);
-  const period = match[3];
-
-  if (period === "PM" && hours !== 12) hours += 12;
-  if (period === "AM" && hours === 12) hours = 0;
-
-  const date = new Date(referenceDate);
-  date.setHours(hours, minutes, 0, 0);
-
-  if (period === "AM" && hours === 0 && referenceDate.getHours() >= 12) {
-    date.setDate(date.getDate() + 1);
-  }
-
-  return date;
-}
-
-function renderEmptyState(service) {
-  elements.nextTime.textContent = "--";
-  elements.routeSummary.textContent = `No ${service.label} trips match that route direction. Try another destination.`;
-  elements.waitTime.textContent = "--";
-  elements.arrivalTime.textContent = "--";
-  elements.serviceType.textContent = service.label;
-  elements.tripCount.textContent = "0 trips";
-  elements.tripList.innerHTML = `<p class="message">No scheduled trips are available for this route direction.</p>`;
-}
-
-function renderNextTrip(trip, service, now) {
-  elements.nextTime.textContent = formatTime(trip.departureDate);
-  elements.routeSummary.textContent = `${trip.origin.name} to ${trip.destination.name}`;
-  elements.waitTime.textContent = formatWait(trip.departureDate - now);
-  elements.arrivalTime.textContent = formatTime(trip.arrivalDate);
-  elements.serviceType.textContent = service.label;
-}
-
-function renderTripList(trips, now) {
-  const upcomingTrips = trips.filter((trip) => trip.departureDate >= now).slice(0, 8);
-  const visibleTrips = upcomingTrips.length ? upcomingTrips : trips.slice(0, 8);
-
-  elements.tripCount.textContent = `${trips.length} trip${trips.length === 1 ? "" : "s"}`;
-  elements.tripList.innerHTML = visibleTrips
-    .map(
-      (trip) => `
-        <article class="trip-row">
-          <strong>${formatTime(trip.departureDate)}</strong>
-          <div>
-            <p>${trip.origin.shortName} to ${trip.destination.shortName}</p>
-            <p>Arrives ${formatTime(trip.arrivalDate)}</p>
-          </div>
-          <span>${formatWait(trip.departureDate - now)}</span>
-        </article>
-      `,
-    )
-    .join("");
-}
-
-function formatTime(date) {
-  return date.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
-}
-
-function formatWait(milliseconds) {
-  if (milliseconds < 0) {
-    return "later";
-  }
-
-  const totalMinutes = Math.round(milliseconds / 60000);
-  if (totalMinutes < 1) {
-    return "now";
-  }
-
-  const hours = Math.floor(totalMinutes / 60);
-  const minutes = totalMinutes % 60;
-
-  if (!hours) {
-    return `${minutes} min`;
-  }
-
-  return `${hours}h ${minutes}m`;
-}
-
-function getStop(id) {
-  return stops.find((stop) => stop.id === id);
-}
-
-function showMessage(text) {
-  elements.message.textContent = text;
-  elements.message.classList.remove("hidden");
-}
-
-function hideMessage() {
-  elements.message.classList.add("hidden");
-}
-
-function saveSettings() {
-  localStorage.setItem(
-    "bow-shuttle-settings",
-    JSON.stringify({
-      origin: elements.originSelect.value,
-      destination: elements.destinationSelect.value,
-      day: elements.daySelect.value,
-    }),
-  );
-}
-
-initializeApp();
+window.addEventListener('hashchange',()=>{render();main.focus();window.scrollTo(0,0);});
+window.addEventListener('online',()=>document.querySelector('#offlineNotice')?.remove());
+window.addEventListener('offline',()=>{if(!document.querySelector('#offlineNotice')){const p=document.createElement('p');p.id='offlineNotice';p.className='offline';p.setAttribute('role','status');p.textContent='You’re offline. The loaded archive still works; official sources and map links need a connection.';main.prepend(p);}});
+render();
