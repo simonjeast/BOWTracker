@@ -25,3 +25,7 @@ Before release, check at 360px, 390px, 768px and 1440px:
 ## External evidence gaps
 
 A confirmed 2026–27 timetable, holiday/service calendar and any authorized GPS feed remain unavailable from the checked sources. The interface handles this with an unconfirmed default and an explicit archive preview; no current service claim should be enabled until evidence changes.
+
+## Resilience follow-up
+
+The interface test now also covers missing geolocation support, low-accuracy and invalid coordinates, far-away fixes, late location callbacks after navigation, and offline → navigate → refresh controls → reconnect. The offline notice now survives view changes, and archived journey context stays visible on the Stops page. All 12 tests still pass. Browser policy verification was retried and remains unavailable; rendered-layout checks are still outstanding.

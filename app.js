@@ -51,7 +51,7 @@ function journeyView(id) {
 }
 function mapUrl(s) { return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(s.name+', Massachusetts')}`; }
 function stopsView(selected) {
-  main.innerHTML = header('Find your stop.', 'Four boarding locations. One shared campus loop.') + `<div class="stops-intro"><p>Use the official stop name to find your way. Map links open a place search; confirm the signed boarding point when you arrive.</p><button class="button secondary" id="locate">⌖ Suggest a nearby stop</button></div><div id="locationStatus" role="status"></div><div class="stop-grid">${stops.map((s,i) => `<article class="stop-card ${selected === s.id ? 'selected-stop' : ''}" id="${s.id}"><div class="stop-top"><span class="stop-number">0${i+1}</span><span class="small-tag">${i < 2 ? 'WELLESLEY' : s.shortName.toUpperCase()}</span></div><h2>${escape(s.shortName)}</h2><p class="stop-detail">${escape(s.detail)}</p><p class="stop-direction">${s.id === 'wellesley-founders' ? 'Served on both legs. Check your journey direction.' : s.id === 'olin-east' ? 'Served before Babson on the outbound leg.' : s.id === 'babson-hollister' ? 'Return leg continues to Founders and Wellesley.' : 'Start and end of the published loop.'}</p><div class="stop-actions"><a class="underlined" href="${mapUrl(s)}" target="_blank" rel="noreferrer">Open map search ↗</a><button class="text-button" data-origin="${s.id}">Leave from here →</button></div></article>`).join('')}</div><p class="fine-print">Location is optional, requested only when you choose it, and never stored. Suggestions use approximate stop coordinates; they are not walking directions.</p>` + footer();
+  main.innerHTML = header('Find your stop.', 'Four boarding locations. One shared campus loop.') + (state.preview ? banner() : '') + `<div class="stops-intro"><p>Use the official stop name to find your way. Map links open a place search; confirm the signed boarding point when you arrive.</p><button class="button secondary" id="locate">⌖ Suggest a nearby stop</button></div><div id="locationStatus" role="status"></div><div class="stop-grid">${stops.map((s,i) => `<article class="stop-card ${selected === s.id ? 'selected-stop' : ''}" id="${s.id}"><div class="stop-top"><span class="stop-number">0${i+1}</span><span class="small-tag">${i < 2 ? 'WELLESLEY' : s.shortName.toUpperCase()}</span></div><h2>${escape(s.shortName)}</h2><p class="stop-detail">${escape(s.detail)}</p><p class="stop-direction">${s.id === 'wellesley-founders' ? 'Served on both legs. Check your journey direction.' : s.id === 'olin-east' ? 'Served before Babson on the outbound leg.' : s.id === 'babson-hollister' ? 'Return leg continues to Founders and Wellesley.' : 'Start and end of the published loop.'}</p><div class="stop-actions"><a class="underlined" href="${mapUrl(s)}" target="_blank" rel="noreferrer">Open map search ↗</a><button class="text-button" data-origin="${s.id}">Leave from here →</button></div></article>`).join('')}</div><p class="fine-print">Location is optional, requested only when you choose it, and never stored. Suggestions use approximate stop coordinates; they are not walking directions.</p>` + footer();
   document.querySelectorAll('[data-origin]').forEach(b => b.onclick = () => { state.origin = b.dataset.origin; if(state.destination === state.origin) state.destination = stops.find(s => s.id !== state.origin).id; state.searched=false; persist(); location.hash='#find'; });
   document.querySelector('#locate').onclick = locate;
   if (selected && stop(selected)) document.getElementById(selected).scrollIntoView({block:'nearest'});
@@ -64,7 +64,7 @@ function locate() {
   show('<p class="location-message">Finding a nearby stop… Your browser will ask for permission.</p>');
   navigator.geolocation.getCurrentPosition(position => {
     const {latitude:lat,longitude:lon,accuracy} = position.coords;
-    if (![lat,lon,accuracy].every(Number.isFinite) || accuracy > 500 || accuracy < 0) { show('<p class="location-message">This location is too imprecise to suggest a stop. Choose one below.</p>'); return; }
+    if (![lat,lon,accuracy].every(Number.isFinite) || accuracy > 500 || accuracy < 0 || Math.abs(lat) > 90 || Math.abs(lon) > 180) { show('<p class="location-message">This location is too imprecise to suggest a stop. Choose one below.</p>'); return; }
     const nearby = stops.map(s=>({s,metres:distance({lat,lon},s)})).sort((a,b)=>a.metres-b.metres)[0];
     if(nearby.metres > 3000) { show('<p class="location-message">You seem to be away from the campuses. Choose your boarding stop below.</p>'); return; }
     show(`<div class="location-message"><strong>${escape(nearby.s.name)} may be nearby.</strong><p>About ${Math.round(nearby.metres/100)*100} m in a straight line · device accuracy ±${Math.round(accuracy)} m. Stop coordinates are approximate.</p><button class="button secondary" id="confirmStop">Use this as my origin</button></div>`);
@@ -77,6 +77,7 @@ function serviceView() {
   document.querySelector('#tableDay').onchange = table; table();
 }
 function bindShared() {
+  renderConnectionState();
   document.querySelectorAll('[data-preview]').forEach(b=>b.onclick=enterPreview);
   const exit = document.querySelector('#exitPreview'); if(exit)exit.onclick=()=>{state.preview=false;state.searched=false;Object.assign(state,{date:localParts().date,time:localParts().time});if(location.hash!=='#find')location.hash='#find';else render();};
 }
@@ -89,6 +90,16 @@ function render() {
   document.title = `BOWTracker · ${view==='stops'?'Stops':view==='service'?'Schedule & service':view==='journey'?'Your journey':'Your campus connection'}`;
 }
 window.addEventListener('hashchange',()=>{render();main.focus();window.scrollTo(0,0);});
-window.addEventListener('online',()=>document.querySelector('#offlineNotice')?.remove());
-window.addEventListener('offline',()=>{if(!document.querySelector('#offlineNotice')){const p=document.createElement('p');p.id='offlineNotice';p.className='offline';p.setAttribute('role','status');p.textContent='You’re offline. The loaded archive still works; official sources and map links need a connection.';main.prepend(p);}});
+function renderConnectionState() {
+  document.querySelector('#offlineNotice')?.remove();
+  if (navigator.onLine !== false) return;
+  const notice = document.createElement('p');
+  notice.id = 'offlineNotice';
+  notice.className = 'offline';
+  notice.setAttribute('role', 'status');
+  notice.textContent = 'You’re offline. The loaded archive still works; official sources and map links need a connection.';
+  main.prepend(notice);
+}
+window.addEventListener('online', renderConnectionState);
+window.addEventListener('offline', renderConnectionState);
 render();
